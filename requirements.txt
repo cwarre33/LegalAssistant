@@ -8,3 +8,4 @@ python-docx
 nltk
 spacy
 langchain-community
+torch==2.1.0
