@@ -11,3 +11,4 @@ python-docx
 unstructured
 nltk
 spacy
+pdfminer.six
