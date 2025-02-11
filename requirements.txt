@@ -14,7 +14,7 @@ spacy
 pdfminer.six==20201018
 pillow-heif
 pytesseract
-textract
+textract<=0.29.0
 transformers
 sentence-transformers
 pi-heif
