@@ -13,3 +13,4 @@ nltk
 spacy
 pdfminer.six==20220506
 pillow-heif
+pillow
