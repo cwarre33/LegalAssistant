@@ -168,10 +168,3 @@ st.sidebar.markdown("""
 - **Chunk Sizes**: 1000, 1500, 2000 tokens
 - **Retrieval Modes**: MMR, Standard Similarity, Hybrid Search
 """)
-
-st.sidebar.markdown("### Requirements")
-st.sidebar.markdown("""
-1. Groq API key (set in Streamlit secrets)
-2. `langchain-groq` package installed
-3. `python-docx` for Word document support
-""")
