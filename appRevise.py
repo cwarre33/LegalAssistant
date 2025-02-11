@@ -8,6 +8,7 @@ from langchain.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 import os
 import tempfile
+import fitz
 from typing import List
 
 
@@ -48,18 +49,22 @@ def process_documents(uploaded_files: List) -> str:
 
         try:
             if file_extension == ".pdf":
-                loader = UnstructuredPDFLoader(tmp_file_path)
+                doc = fitz.open(tmp_file_path)
+                for page in doc:
+                    all_text += page.get_text() + "\n\n"
             elif file_extension == ".docx":
                 loader = UnstructuredWordDocumentLoader(tmp_file_path)
+                docs = loader.load()
+                for doc in docs:
+                    all_text += doc.page_content + "\n\n"
             elif file_extension == ".txt":
                 loader = TextLoader(tmp_file_path)
+                docs = loader.load()
+                for doc in docs:
+                    all_text += doc.page_content + "\n\n"
             else:
                 st.warning(f"Unsupported file type: {file_extension}")
                 continue
-
-            docs = loader.load()
-            for doc in docs:
-                all_text += doc.page_content + "\n\n"
 
         except Exception as e:
             st.error(f"Error processing {uploaded_file.name}: {str(e)}")

@@ -18,3 +18,4 @@ textract<=0.29.0
 transformers
 sentence-transformers
 pi-heif
+PyMuPDF
