@@ -12,3 +12,8 @@ unstructured
 nltk
 spacy
 pdfminer.six
+pillow-heif
+pytesseract
+textract
+transformers
+sentence-transformers
