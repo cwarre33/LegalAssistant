@@ -9,6 +9,12 @@ from langchain_groq import ChatGroq
 import os
 import tempfile
 from typing import List
+import nltk
+import spacy
+
+nltk.download('punkt')
+spacy.cli.download("en_core_web_sm")
+
 
 # Set up the Streamlit UI
 st.title("AI-Powered Legal Assistant with Groq")

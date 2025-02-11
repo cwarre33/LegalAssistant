@@ -1,0 +1,9 @@
+streamlit
+langchain
+langchain-groq
+sentence-transformers
+faiss-cpu
+unstructured
+python-docx
+nltk
+spacy
