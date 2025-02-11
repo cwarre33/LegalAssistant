@@ -11,6 +11,10 @@ python-docx
 unstructured
 nltk
 spacy
-pdfminer.six==20220506
+pdfminer.six
 pillow-heif
-pillow
+pytesseract
+textract
+transformers
+sentence-transformers
+pi-heif
