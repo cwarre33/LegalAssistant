@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain_ollama
+chromadb
+groq
+pandas
+numpy
+scipy
+plotly
+requests
