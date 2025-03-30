@@ -18,3 +18,4 @@ transformers
 sentence-transformers
 pi-heif
 PyMuPDF
+duckduckgo-search
