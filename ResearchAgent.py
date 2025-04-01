@@ -14,6 +14,7 @@ from typing import List, Dict, Any
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from fpdf import FPDF
 import base64
+from tavily import TavilySearch
 
 # Set up the Streamlit UI
 st.set_page_config(
@@ -222,20 +223,46 @@ def enhanced_query_refinement(query: str) -> Dict[str, Any]:
 
 # Function to search the web for scientific citations
 def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
-    """Search the web for scientific citations using DuckDuckGo"""
+    """Search the web for scientific citations using Tavily and DuckDuckGo"""
     try:
+        # Tavily search
+        tavily = TavilySearch(api_key=st.secrets("TAVILY_API_KEY"))
+        tavily_results = tavily.search(query, max_results=max_results)
+
+        # DuckDuckGo search
         ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
-        
-        # Simplify query for better search results
-        clean_query = " ".join(query.split("\n")[0].split()[:20])  # Take first line & limit words
+        clean_query = " ".join(query.split("\n")[0].split()[:20])  # Simplify query
         academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
-        
-        # Execute search with error handling
-        results = ddg.results(academic_query, max_results)
-        
-        if not results:
+        ddg_results = ddg.results(academic_query, max_results)
+
+        # Combine results
+        combined_results = tavily_results + ddg_results
+
+        if not combined_results:
             st.warning("No web results found. Try simplifying your query")
             return []
+
+        # Process results into Document format
+        web_docs = []
+        for result in combined_results:
+            content = f"Title: {result.get('title', '')}\n"
+            content += f"URL: {result.get('link', '')}\n"
+            content += f"Snippet: {result.get('body', '')}"
+
+            web_docs.append(Document(
+                page_content=content[:2000],  # Limit content length
+                metadata={
+                    "title": result.get('title', 'Untitled'),
+                    "link": result.get('link', ''),
+                    "source": "web_search"
+                }
+            ))
+
+        return web_docs
+
+    except Exception as e:
+        st.error(f"Search error: {str(e)}")
+        return []
 
         # Process results into Document format
         web_docs = []
