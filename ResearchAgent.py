@@ -10,9 +10,10 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 import os
 import tempfile
-import fitz
 from typing import List, Dict, Any
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
+from fpdf import FPDF
+import base64
 
 # Set up the Streamlit UI
 st.set_page_config(
@@ -270,6 +271,53 @@ def retrieve_papers(query: str, faiss_store, top_k: int = 5):
     except Exception as e:
         st.error(f"Error retrieving papers: {str(e)}")
         return []
+
+# Function to generate PDF
+def generate_pdf_report(title, summary, sections, references):
+    """Generate a formatted research report as a PDF file."""
+    try:
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(0, 10, title.encode('latin-1', 'replace').decode('latin-1'), ln=True, align="C")
+        pdf.ln(5)
+        pdf.set_font("Arial", "I", 10)
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        pdf.cell(0, 10, f"Report Generated: {current_date}", ln=True)
+        pdf.ln(5)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(0, 10, "Executive Summary", ln=True)
+        pdf.set_font("Arial", "", 10)
+        pdf.multi_cell(0, 10, summary.encode('latin-1', 'replace').decode('latin-1'))
+        pdf.ln(5)
+        for section in sections:
+            pdf.set_font("Arial", "B", 12)
+            pdf.cell(0, 10, section["title"].encode('latin-1', 'replace').decode('latin-1'), ln=True)
+            pdf.set_font("Arial", "", 10)
+            pdf.multi_cell(0, 10, section["content"].encode('latin-1', 'replace').decode('latin-1'))
+            pdf.ln(5)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(0, 10, "References", ln=True)
+        pdf.set_font("Arial", "", 10)
+        for ref in references:
+            pdf.multi_cell(0, 10, f"- {ref}".encode('latin-1', 'replace').decode('latin-1'))
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            pdf_path = temp_file.name
+        
+        pdf.output(pdf_path)
+        with open(pdf_path, "rb") as file:
+            pdf_bytes = file.read()
+        base64_pdf = base64.b64encode(pdf_bytes).decode("utf-8")
+        os.unlink(pdf_path)
+        
+        return {
+            "pdf_base64": base64_pdf,
+            "filename": f"{title.replace(' ', '_')}.pdf"
+        }
+        
+    except Exception as e:
+        st.error(f"PDF generation error: {str(e)}")
+        return None
 
 # Function to generate the final research synthesis
 def generate_attributed_synthesis(query: str, documents: List[Document]) -> Dict[str, Any]:
@@ -593,7 +641,17 @@ if original_query:
                     st.markdown(f"```\n{content_preview[:500]}\n...```" if len(content_preview) > 500 
                                 else f"```\n{content_preview}\n```")
                     st.markdown("---")
-            
+            # Add download button in display logic
+            if combined_documents:
+                [...]
+                if st.button("📥 Generate PDF Report"):
+                    pdf_data = generate_pdf_report(
+                        f"Research Synthesis: {query}",
+                        research_synthesis,
+                        [{"title": "Key Findings", "content": research_synthesis}],
+                        [cit for cit in citations]
+                    )
+                    st.download_button(...)
             # Add human validation interface
             if not is_hypothetical:
                 add_human_validation_ui(research_synthesis, combined_documents, synthesis_confidence)
