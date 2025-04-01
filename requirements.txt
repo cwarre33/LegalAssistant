@@ -20,4 +20,4 @@ pi-heif
 PyMuPDF
 fpdf2
 duckduckgo-search
-TavilySearch
+tavily-python
