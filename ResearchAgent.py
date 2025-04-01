@@ -649,7 +649,7 @@ if original_query:
                         f"Research Synthesis: {query}",
                         research_synthesis,
                         [{"title": "Key Findings", "content": research_synthesis}],
-                        [cit for cit in citations]
+                        [citation for citation in search_web_citations(query, max_web_results) if citation.metadata.get('link') is not None]
                     )
                     st.download_button(...)
             # Add human validation interface
