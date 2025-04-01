@@ -62,15 +62,13 @@ with st.sidebar:
     confidence_threshold = st.slider("Confidence Threshold", 0.0, 1.0, 0.6, 0.05)
     
     # API Key configuration
-    st.markdown("### API Configuration")
-    api_key = st.text_input("Groq API Key", type="password")
+    api_key = st.secrets.get("GROQ_API_KEY", None)
     if api_key:
-        os.environ["GROQ_API_KEY"] = api_key
+        st.markdown("Groq API Key is set in secrets.")
     else:
-        try:
-            os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
-        except:
-            st.warning("Please provide a Groq API key")
+        st.markdown("Please set your Groq API Key in the secrets management.")
+        st.markdown("You can find your API key in your Groq account settings.")
+        st.markdown("You can also set it in the environment variables.")
 
 # Main content
 # Upload scientific papers (only shown when documents are selected)
