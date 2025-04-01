@@ -18,4 +18,4 @@ transformers
 sentence-transformers
 pi-heif
 PyMuPDF
-duckduckgo-search
+duckduckgo_search==5.3.1b1
