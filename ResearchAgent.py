@@ -226,7 +226,7 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
     """Search the web for scientific citations using Tavily and DuckDuckGo"""
     try:
         # Tavily search
-        tavily = TavilyClient(api_key=st.secrets("TAVILY_API_KEY"))
+        tavily = TavilyClient(api_key="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", region="us")
         tavily_results = tavily.search(query, max_results=max_results)
 
         # DuckDuckGo search
