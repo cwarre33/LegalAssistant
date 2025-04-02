@@ -14,7 +14,7 @@ from typing import List, Dict, Any
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from fpdf import FPDF
 import base64
-
+from tavily import TavilyClient
 
 # Set up the Streamlit UI
 st.set_page_config(
@@ -226,7 +226,7 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
     """Search the web for scientific citations using Tavily and DuckDuckGo"""
     try:
         # Tavily search
-        tavily = TavilySearch(api_key=st.secrets("TAVILY_API_KEY"))
+        tavily = TavilyClient(api_key=st.secrets("TAVILY_API_KEY"))
         tavily_results = tavily.search(query, max_results=max_results)
 
         # DuckDuckGo search
