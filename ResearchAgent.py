@@ -223,7 +223,7 @@ def enhanced_query_refinement(query: str) -> Dict[str, Any]:
 
 # Function to search the web for scientific citations
 def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
-    """Search the web for scientific citations using Tavily and DuckDuckGo"""
+    """Search the web for scientific citations using Tavily"""
     try:
         # Tavily search
         tavily = TavilyClient(api_key="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")
@@ -231,48 +231,17 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
         academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
         tavily_results = tavily.search(academic_query, max_results=max_results) or []
 
-        # DuckDuckGo search
-        ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
-        clean_query = " ".join(query.split("\n")[0].split()[:20])  # Simplify query
-        academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
-        ddg_results = ddg.results(academic_query, max_results) or []
-
-        # Combine results
-        combined_results = list(tavily_results) + list(ddg_results)
-
-        if not combined_results:
-            st.warning("No web results found. Try simplifying your query")
+        if not tavily_results:
+            st.warning("No web results found using Tavily. Try simplifying your query")
             return []
 
         # Process results into Document format
         web_docs = []
-        for result in combined_results:
+        for result in tavily_results:
             content = f"Title: {result.get('title', '')}\n"
             content += f"URL: {result.get('link', '')}\n"
             content += f"Snippet: {result.get('body', '')}"
 
-            web_docs.append(Document(
-                page_content=content[:2000],  # Limit content length
-                metadata={
-                    "title": result.get('title', 'Untitled'),
-                    "link": result.get('link', ''),
-                    "source": "web_search"
-                }
-            ))
-
-        return web_docs
-
-    except Exception as e:
-        st.error(f"Search error: {str(e)}")
-        return []
-
-        # Process results into Document format
-        web_docs = []
-        for result in results:
-            content = f"Title: {result.get('title', '')}\n"
-            content += f"URL: {result.get('link', '')}\n"
-            content += f"Snippet: {result.get('body', '')}"
-            
             web_docs.append(Document(
                 page_content=content[:2000],  # Limit content length
                 metadata={
