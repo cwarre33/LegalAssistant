@@ -238,7 +238,11 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
         # Process results into Document format
         web_docs = []
         for result in tavily_results:
-            content = f"Title: {result.get('title', '')}\n"
+            if isinstance(result, dict):  # Ensure result is a dictionary
+                content = f"Title: {result.get('title', '')}\n"
+            else:
+                st.warning(f"Unexpected result format: {result}")
+                continue
             content += f"URL: {result.get('link', '')}\n"
             content += f"Snippet: {result.get('body', '')}"
 
