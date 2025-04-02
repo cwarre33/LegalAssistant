@@ -227,16 +227,16 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
     try:
         # Tavily search
         tavily = TavilyClient(api_key="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")
-        tavily_results = tavily.search(query, max_results=max_results)
+        tavily_results = tavily.search(query, max_results=max_results) or []
 
         # DuckDuckGo search
         ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
         clean_query = " ".join(query.split("\n")[0].split()[:20])  # Simplify query
         academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
-        ddg_results = ddg.results(academic_query, max_results)
+        ddg_results = ddg.results(academic_query, max_results) or []
 
         # Combine results
-        combined_results = tavily_results + ddg_results
+        combined_results = list(tavily_results) + list(ddg_results)
 
         if not combined_results:
             st.warning("No web results found. Try simplifying your query")
