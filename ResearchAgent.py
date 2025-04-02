@@ -237,7 +237,11 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
         ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
         clean_query = " ".join(query.split("\n")[0].split()[:20])  # Simplify query
         academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
-        ddg_results = ddg.results(academic_query, max_results) or []
+        try:
+            ddg_results = ddg.results(academic_query, max_results) or []
+        except Exception as e:
+            st.warning(f"DuckDuckGo search failed: {str(e)}. Skipping DDG results.")
+            ddg_results = []
 
         # Combine results
         combined_results = list(tavily_results) + list(ddg_results)
