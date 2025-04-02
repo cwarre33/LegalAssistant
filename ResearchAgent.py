@@ -227,21 +227,13 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
     try:
         # Tavily search
         tavily = TavilyClient(api_key="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")
-        if original_query.strip():  # Ensure query is not empty or whitespace
-            tavily_results = tavily.search(original_query, max_results=max_results) or []
-        else:
-            tavily_results = []
-            st.warning("Query is missing. Tavily search skipped.")
+        tavily_results = tavily.search(query, max_results=max_results) or []
 
         # DuckDuckGo search
         ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
         clean_query = " ".join(query.split("\n")[0].split()[:20])  # Simplify query
         academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
-        try:
-            ddg_results = ddg.results(academic_query, max_results) or []
-        except Exception as e:
-            st.warning(f"DuckDuckGo search failed: {str(e)}. Skipping DDG results.")
-            ddg_results = []
+        ddg_results = ddg.results(academic_query, max_results) or []
 
         # Combine results
         combined_results = list(tavily_results) + list(ddg_results)
