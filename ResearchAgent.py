@@ -227,7 +227,11 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
     try:
         # Tavily search
         tavily = TavilyClient(api_key="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")
-        tavily_results = tavily.search(query, max_results=max_results) or []
+        if query.strip():  # Ensure query is not empty or whitespace
+            tavily_results = tavily.search(query, max_results=max_results) or []
+        else:
+            tavily_results = []
+            st.warning("Query is missing. Tavily search skipped.")
 
         # DuckDuckGo search
         ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
