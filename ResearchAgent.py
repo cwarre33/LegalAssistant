@@ -14,7 +14,8 @@ from typing import List, Dict, Any
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from fpdf import FPDF
 import base64
-from tavily import TavilySearch
+import datetime
+from langchain_community.utilities import TavilySearch
 
 # Set up the Streamlit UI
 st.set_page_config(
