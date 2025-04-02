@@ -14,7 +14,6 @@ from typing import List, Dict, Any
 from langchain_community.utilities import DuckDuckGoSearchAPIWrapper
 from fpdf import FPDF
 import base64
-from tavily import TavilyClient
 
 # Set up the Streamlit UI
 st.set_page_config(
@@ -223,29 +222,28 @@ def enhanced_query_refinement(query: str) -> Dict[str, Any]:
 
 # Function to search the web for scientific citations
 def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
-    """Search the web for scientific citations using Tavily"""
+    """Search the web for scientific citations using DuckDuckGo"""
     try:
-        # Tavily search
-        tavily = TavilyClient(api_key="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")
-        clean_query = " ".join(query.split("\n")[0].split()[:20])
+        ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
+        
+        # Simplify query for better search results
+        clean_query = " ".join(query.split("\n")[0].split()[:20])  # Take first line & limit words
         academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
-        tavily_results = tavily.search(academic_query, max_results=max_results) or []
-
-        if not tavily_results:
-            st.warning("No web results found using Tavily. Try simplifying your query")
+        
+        # Execute search with error handling
+        results = ddg.results(academic_query, max_results)
+        
+        if not results:
+            st.warning("No web results found. Try simplifying your query")
             return []
 
         # Process results into Document format
         web_docs = []
-        for result in tavily_results:
-            if isinstance(result, dict):  # Ensure result is a dictionary
-                content = f"Title: {result.get('title', '')}\n"
-            else:
-                st.warning(f"Unexpected result format: {result}")
-                continue
+        for result in results:
+            content = f"Title: {result.get('title', '')}\n"
             content += f"URL: {result.get('link', '')}\n"
             content += f"Snippet: {result.get('body', '')}"
-
+            
             web_docs.append(Document(
                 page_content=content[:2000],  # Limit content length
                 metadata={
