@@ -639,37 +639,7 @@ if original_query:
                                 else f"```\n{content_preview}\n```")
                     st.markdown("---")
             # Add download button in display logic
-            # Generate PDF report
-            with st.spinner("Generating PDF report..."):
-                pdf_report = generate_pdf_report(
-                    title="Research Report",
-                    summary=research_synthesis,
-                    sections=[
-                        {"title": "Research Question", "content": query},
-                        {"title": "Synthesis", "content": research_synthesis}
-                    ],
-                    references=[doc.metadata.get('title', 'Untitled') for doc in combined_documents]
-                )
-                
-                if pdf_report:
-                    pdf_filename = pdf_report["filename"]
-                    pdf_base64 = pdf_report["pdf_base64"]
-                    
-                    st.markdown(
-                        f'<a href="data:application/pdf;base64,{pdf_base64}" download="{pdf_filename}">📥 Download Research Report (PDF)</a>',
-                        unsafe_allow_html=True
-                    )
-                    
-                    # Add a download button for the report
-                    st.download_button(
-                        label="📥 Download Research Report (PDF)",
-                        data=base64.b64decode(pdf_base64),
-                        file_name=pdf_filename,
-                        mime="application/pdf"
-                    )
-                else:
-                    st.error("Failed to generate PDF report.")
-
+        
             # Add human validation interface
             if not is_hypothetical:
                 add_human_validation_ui(research_synthesis, combined_documents, synthesis_confidence)
