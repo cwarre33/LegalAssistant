@@ -227,7 +227,9 @@ def search_web_citations(query: str, max_results: int = 10) -> List[Document]:
     try:
         # Tavily search
         tavily = TavilyClient(api_key="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")
-        tavily_results = tavily.search(query, max_results=max_results) or []
+        clean_query = " ".join(query.split("\n")[0].split()[:20])
+        academic_query = f"site:.edu OR site:.gov {clean_query} filetype:pdf"
+        tavily_results = tavily.search(academic_query, max_results=max_results) or []
 
         # DuckDuckGo search
         ddg = DuckDuckGoSearchAPIWrapper(region="wt-wt", time="y", max_results=max_results)
